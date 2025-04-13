@@ -10,6 +10,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('qr:generate-daily')->twiceDaily(6, 15);
+        $schedule->command('absensi:generate-alpha')->timezone('Asia/Jakarta')->dailyAt('18:00');
     }
 
     protected function commands(): void

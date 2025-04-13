@@ -39,11 +39,10 @@ class GenerateQrCodeDaily extends Command
             return;
         }
     
-        // Tentukan expired_at berdasarkan tipe
         if ($type === 'checkin') {
-            $expiredAt = $now->copy()->setTime(10, 0, 0); // Expired jam 10 pagi
+            $expiredAt = $now->copy()->setTime(10, 0, 0);
         } elseif ($type === 'checkout') {
-            $expiredAt = $now->copy()->setTime(21, 0, 0); // Expired jam 9 malam
+            $expiredAt = $now->copy()->setTime(21, 0, 0);
         }
     
         $token = Str::random(32);

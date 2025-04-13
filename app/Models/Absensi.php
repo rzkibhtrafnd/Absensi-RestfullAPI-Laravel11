@@ -17,11 +17,18 @@ class Absensi extends Model
         'status',
         'alasan',
         'lampiran',
+        'approval_status',
+        'approved_by',
+        'keterangan_approval',
     ];
 
-    // Relasi ke user (pegawai)
     public function pegawai()
     {
         return $this->belongsTo(User::class, 'pegawai_id');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }
