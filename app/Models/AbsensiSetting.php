@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AbsensiSetting extends Model
 {
-    protected $table = 'attendance_settings'; // sesuai nama tabel di migration
+    protected $table = 'attendance_settings';
     protected $fillable = [
         'check_in_start',
         'check_in_end',

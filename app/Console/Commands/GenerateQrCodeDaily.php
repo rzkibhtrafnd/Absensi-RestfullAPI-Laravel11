@@ -20,9 +20,9 @@ class GenerateQrCodeDaily extends Command
     
         $type = null;
     
-        if ($hour >= 6 && $hour <= 10) {
+        if ($hour >= 6 && $hour <= 11) {
             $type = 'checkin';
-        } elseif ($hour >= 15 && $hour <= 21) {
+        } elseif ($hour >= 14 && $hour <= 21) {
             $type = 'checkout';
         } else {
             $this->info("⏳ Di luar waktu generate QR Code (pagi/sore)");
@@ -40,7 +40,7 @@ class GenerateQrCodeDaily extends Command
         }
     
         if ($type === 'checkin') {
-            $expiredAt = $now->copy()->setTime(10, 0, 0);
+            $expiredAt = $now->copy()->setTime(11, 0, 0);
         } elseif ($type === 'checkout') {
             $expiredAt = $now->copy()->setTime(21, 0, 0);
         }

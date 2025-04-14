@@ -66,12 +66,10 @@ class AbsensiController extends Controller
             ], 403);
         }
     
-        // Ambil pengaturan absensi dari database
         $setting = AbsensiSetting::first();
         if ($setting) {
             $officeLat = $setting->office_latitude;
             $officeLon = $setting->office_longitude;
-            // Asumsikan radius_meters disimpan dalam meter, konversikan ke kilometer
             $allowedRadius = $setting->radius_meters / 1000;
         } else {
             // fallback ke nilai default
@@ -241,7 +239,52 @@ class AbsensiController extends Controller
             'pengajuan' => $pengajuan
         ]);
     }
+
+    public function approveAbsensi($id)
+    {
+        $absensi = Absensi::find($id);
     
+        if (!$absensi) {
+            return response()->json(['message' => 'Data absensi tidak ditemukan.'], 404);
+        }
+    
+        // Mengubah status approval menjadi approved
+        $absensi->approval_status = 'approved';
+    
+        // Menambahkan informasi tentang siapa yang menyetujui (ID pengguna yang melakukan approval)
+        $absensi->approved_by = auth()->user()->id;
+    
+        // Menambahkan keterangan approval jika diperlukan (optional)
+        $absensi->keterangan_approval = 'Absensi disetujui oleh ' . auth()->user()->name;
+    
+        $absensi->save();
+    
+        return response()->json(['message' => 'Pengajuan absensi disetujui.']);
+    }
+    
+    public function rejectAbsensi(Request $request, $id)
+    {
+        $absensi = Absensi::find($id);
+    
+        if (!$absensi) {
+            return response()->json(['message' => 'Data absensi tidak ditemukan.'], 404);
+        }
+    
+        // Mengubah status approval menjadi rejected
+        $absensi->approval_status = 'rejected';
+    
+        // Menambahkan informasi tentang siapa yang menolak (ID pengguna yang melakukan penolakan)
+        $absensi->approved_by = auth()->user()->id;
+    
+        // Menambahkan alasan penolakan dari request
+        $absensi->keterangan_approval = $request->input('alasan_ditolak', 'Tidak ada alasan');
+    
+        $absensi->save();
+    
+        return response()->json(['message' => 'Pengajuan absensi ditolak.']);
+    }
+    
+
     public function listAbsensi()
     {
         $user = auth()->user();
@@ -265,18 +308,22 @@ class AbsensiController extends Controller
     
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $earthRadius = 6371;
-    
+        // Haversine Formula
+        $earthRadius = 6371; // radius bumi dalam kilometer
+
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
-    
+
         $a = sin($dLat / 2) * sin($dLat / 2) +
              cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
              sin($dLon / 2) * sin($dLon / 2);
-    
+
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-        return $earthRadius * $c;
+        $distance = $earthRadius * $c;
+
+        return $distance; // dalam kilometer
     }
+
     
     public function generateAlphaForAll(Request $request)
     {

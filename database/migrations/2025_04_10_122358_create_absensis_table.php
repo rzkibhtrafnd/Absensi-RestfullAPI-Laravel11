@@ -10,7 +10,6 @@ class CreateAbsensisTable extends Migration
     {
         Schema::create('absensis', function (Blueprint $table) {
             $table->id();
-            // Mengaitkan absensi dengan user (pegawai). Sesuaikan nama tabel jika pengguna disimpan di tabel lain.
             $table->foreignId('pegawai_id')->constrained('users')->onDelete('cascade');
             $table->date('tanggal');
             $table->time('jam_masuk')->nullable();
