@@ -3,172 +3,93 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\PegawaiRequest;
+use App\Services\PegawaiService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class PegawaiController extends Controller
 {
-    private const ALLOWED_ROLES = ['pegawai', 'manager'];
+    private PegawaiService $pegawaiService;
 
-    private function isAllowedToManage(?string $targetRole): bool
+    public function __construct(PegawaiService $pegawaiService)
     {
-        if (!$targetRole) return false;
-
-        $userRole = auth()->user()->role;
-
-        // Admin bisa kelola semua
-        if ($userRole === 'admin') {
-            return true;
-        }
-
-        // HR hanya boleh kelola role tertentu
-        return in_array($targetRole, self::ALLOWED_ROLES);
+        $this->pegawaiService = $pegawaiService;
     }
 
     public function index(): JsonResponse
     {
-        $pegawai = User::nonAdmin()->get();
+        $pegawai = $this->pegawaiService->list();
         return $this->successResponse($pegawai);
     }
 
-    public function show($id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $pegawai = User::nonAdmin()->find($id);
-        return $pegawai
-            ? $this->successResponse($pegawai)
-            : $this->notFoundResponse('Pegawai');
+        $pegawai = $this->pegawaiService->find($id);
+
+        if (!$pegawai) {
+            return $this->notFoundResponse('Pegawai');
+        }
+
+        return $this->successResponse($pegawai);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(PegawaiRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role'     => ['required', 'string', Rule::in(array_merge(self::ALLOWED_ROLES, ['admin']))],
-            'divisi'   => 'required_unless:role,admin|string|max:255',
-            'posisi'   => 'required_unless:role,admin|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+        if (!$this->pegawaiService->isAllowedToManage($request->input('role'))) {
+            return $this->unauthorizedResponse();
         }
 
-        if (!$this->isAllowedToManage($request->role)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda tidak memiliki izin untuk membuat user dengan role ini.'
-            ], 403);
-        }
-
-        $pegawai = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => $request->role,
-            'divisi'   => $request->divisi,
-            'posisi'   => $request->posisi,
-        ]);
-
+        $pegawai = $this->pegawaiService->create($request->validated());
         return $this->successResponse($pegawai, 'Pegawai berhasil ditambahkan', 201);
     }
 
-    public function update(Request $request, $id): JsonResponse
+    public function update(PegawaiRequest $request, int $id): JsonResponse
     {
-        $pegawai = User::nonAdmin()->find($id);
+        $pegawai = $this->pegawaiService->find($id);
+
         if (!$pegawai) {
             return $this->notFoundResponse('Pegawai');
         }
 
-        $validator = Validator::make($request->all(), [
-            'name'     => 'sometimes|string|max:255',
-            'email'    => [
-                'sometimes', 'string', 'email', 'max:255',
-                Rule::unique('users')->ignore($pegawai->id)
-            ],
-            'password' => 'sometimes|string|min:8|confirmed',
-            'role'     => ['sometimes', 'string', Rule::in(array_merge(self::ALLOWED_ROLES, ['admin']))],
-            'divisi'   => 'required_unless:role,admin|string|max:255',
-            'posisi'   => 'required_unless:role,admin|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+        if ($request->filled('role') && !$this->pegawaiService->isAllowedToManage($request->input('role'))) {
+            return $this->unauthorizedResponse();
         }
 
-        // Hanya validasi role jika dikirim
-        if ($request->has('role') && !$this->isAllowedToManage($request->role)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda tidak memiliki izin untuk mengubah user dengan role ini.'
-            ], 403);
-        }
-
-        $data = $request->all();
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
-
-        $pegawai->update($data);
-
+        $pegawai = $this->pegawaiService->update($pegawai, $request->validated());
         return $this->successResponse($pegawai, 'Pegawai berhasil diperbarui');
     }
 
-    public function destroy($id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $pegawai = User::nonAdmin()->find($id);
+        $pegawai = $this->pegawaiService->find($id);
+
         if (!$pegawai) {
             return $this->notFoundResponse('Pegawai');
         }
 
-        if (!$this->isAllowedToManage($pegawai->role)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda tidak memiliki izin untuk menghapus user dengan role ini.'
-            ], 403);
+        if (!$this->pegawaiService->isAllowedToManage($pegawai->role)) {
+            return $this->unauthorizedResponse();
         }
 
-        $pegawai->delete();
+        $this->pegawaiService->delete($pegawai);
         return $this->successResponse(null, 'Pegawai berhasil dihapus');
     }
 
-    public function search(Request $request): JsonResponse
+    public function search(PegawaiRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'query' => 'required|string|min:2'
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
-        }
-
-        $pegawai = User::nonAdmin()
-            ->search($request->query)
-            ->get();
-
+        $pegawai = $this->pegawaiService->search($request->input('query'));
         return $this->successResponse($pegawai);
     }
 
-    public function filterByRole(Request $request): JsonResponse
+    public function filterByRole(PegawaiRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'role' => ['required', 'string', Rule::in(self::ALLOWED_ROLES)]
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
-        }
-
-        $pegawai = User::where('role', $request->role)->get();
+        $pegawai = $this->pegawaiService->filterByRole($request->input('role'));
         return $this->successResponse($pegawai);
     }
 
-    // Helper Methods
-    private function successResponse($data, $message = '', $code = 200): JsonResponse
+    // Helper Responses
+    private function successResponse($data, string $message = '', int $code = 200): JsonResponse
     {
         return response()->json([
             'success' => true,
@@ -177,19 +98,19 @@ class PegawaiController extends Controller
         ], $code);
     }
 
-    private function notFoundResponse($entity): JsonResponse
+    private function notFoundResponse(string $entity): JsonResponse
     {
         return response()->json([
             'success' => false,
-            'message' => "$entity tidak ditemukan"
+            'message' => "$entity tidak ditemukan."
         ], 404);
     }
 
-    private function validationErrorResponse($errors): JsonResponse
+    private function unauthorizedResponse(): JsonResponse
     {
         return response()->json([
             'success' => false,
-            'errors'  => $errors
-        ], 422);
+            'message' => 'Anda tidak memiliki izin untuk melakukan aksi ini.'
+        ], 403);
     }
 }

@@ -3,40 +3,42 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    protected $authService;
+
+    public function __construct(AuthService $authService)
     {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+        $this->authService = $authService;
+    }
 
-        $user = User::where('email', $request->email)->first();
+    public function login(LoginRequest $request)
+    {
+        $result = $this->authService->login($request->email, $request->password);
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
+        if (! $result['success']) {
+            return response()->json([
+                'message' => $result['message'],
+            ], 401);
         }
-
-        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login berhasil',
-            'token'   => $token,
-            'user'    => $user
+            'token'   => $result['token'],
+            'user'    => $result['user'],
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->authService->logout($request->user());
 
-        return response()->json(['message' => 'Logout berhasil']);
+        return response()->json([
+            'message' => 'Logout berhasil',
+        ]);
     }
 }
-
