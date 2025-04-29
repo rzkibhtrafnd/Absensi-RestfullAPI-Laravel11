@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
-    public function login($email, $password)
+    public function login(string $email, string $password): array
     {
         $user = User::where('email', $email)->first();
 
@@ -27,7 +27,7 @@ class AuthService
         ];
     }
 
-    public function logout($user)
+    public function logout(User $user): void
     {
         $user->tokens()->delete();
     }
