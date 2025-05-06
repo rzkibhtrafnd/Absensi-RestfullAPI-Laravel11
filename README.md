@@ -548,22 +548,31 @@ Content-Type: application/json
 - Request Body:
 ```json
 {
-  "qr_data": "encoded-qr-data",
-  "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194
+  "token": "abc123xyz",
+  "latitude": -6.2001,
+  "longitude": 106.8167
+}
+
+```
+- Success Response(check-in):
+```json
+{
+  "success": true,
+  "message": "Check-in berhasil",
+  "type": "checkin",
+  "absensi": {
+    ...
   }
 }
 ```
-- Success Response:
+- Success Response(check-out):
 ```json
 {
-  "status": "success",
-  "message": "Attendance recorded successfully",
-  "data": {
-    "type": "check_in",
-    "time": "2023-06-01T08:05:20Z",
-    "status": "on_time"
+  "success": true,
+  "message": "Check-out berhasil",
+  "type": "checkout",
+  "absensi": {
+    ...
   }
 }
 ```
@@ -579,28 +588,19 @@ Submit a manual attendance request.
 Authorization: Bearer your-token
 Content-Type: application/json
 ```
-- Request Body:
-```json
-{
-  "date": "2023-06-01",
-  "check_in": "08:00:00",
-  "check_out": "17:00:00",
-  "alasan": "Forgot to scan QR",
-  "lampiran": "base64-encoded-image" // Optional
-}
-```
+- Request Body(form-data):
+    - tanggal: 2025-05-06
+    - status: Izin
+    - alasan: Menghadiri acara keluarga
+    - lampiran: [Upload file PDF/JPG/PNG]
+
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Attendance request submitted successfully",
-  "data": {
-    "id": 1,
-    "date": "2023-06-01",
-    "check_in": "08:00:00",
-    "check_out": "17:00:00",
-    "status": "pending",
-    "created_at": "2023-06-02T10:15:30Z"
+  "success": true,
+  "message": "Pengajuan absensi berhasil dikirim",
+  "absensi": {
+    ...
   }
 }
 ```
@@ -615,36 +615,16 @@ Get attendance history for the authenticated user.
 ```json
 Authorization: Bearer your-token
 ```
-- Query Parameters:
-```json
-start_date: Filter by start date (YYYY-MM-DD)
-end_date: Filter by end date (YYYY-MM-DD)
-page: Page number (default: 1)
-per_page: Items per page (default: 15)
-```
 - Success Response:
 ```json
-{
-  "status": "success",
-  "data": {
-    "records": [
-      {
-        "id": 1,
-        "date": "2023-06-01",
-        "check_in": "08:05:20",
-        "check_out": "17:02:15",
-        "status": "on_time",
-        "working_hours": "08:57:00"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 30,
-      "last_page": 2
-    }
-  }
-}
+[
+  {
+    "tanggal": "2025-05-05",
+    "jam_masuk": "08:10:00",
+    "status": "Terlambat"
+  },
+  ...
+]
 ```
 
 ## Approve Attendance Request
@@ -658,23 +638,10 @@ Approve a pending attendance request.
 Authorization: Bearer your-token
 Content-Type: application/json
 ```
-
-- Request Body:
-```json
-{
-  "notes": "Approved based on evidence provided" // Optional
-}
-```
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Attendance request approved",
-  "data": {
-    "id": 1,
-    "status": "approved",
-    "updated_at": "2023-06-03T09:10:15Z"
-  }
+  "message": "Pengajuan absensi disetujui."
 }
 ```
 
@@ -691,21 +658,16 @@ Content-Type: application/json
 ```
 
 - Request Body:
-```json{
-  "keterangan_approval": "Insufficient evidence provided" // Optional
+```json
+{
+  "alasan": "Lampiran tidak valid"
 }
 ```
 
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Attendance request rejected",
-  "data": {
-    "id": 1,
-    "status": "rejected",
-    "updated_at": "2023-06-03T09:15:20Z"
-  }
+  "message": "Pengajuan absensi ditolak."
 }
 ```
 
@@ -716,16 +678,6 @@ Get history of attendance requests.
 - Method: GET
 - Auth Required: Yes (HR role)
 - Headers: Authorization: Bearer your-token
-- Query Parameters:
-```json
-status: Filter by status (pending, approved, rejected)
-start_date: Filter by start date (YYYY-MM-DD)
-end_date: Filter by end date (YYYY-MM-DD)
-employee_id: Filter by employee ID
-page: Page number (default: 1)
-per_page: Items per page (default: 15)
-```
-
 - Success Response:
 ```json
 {
@@ -756,31 +708,6 @@ per_page: Items per page (default: 15)
 }
 ```
 
-## Get Attendance Settings (HR)
-Get current attendance system settings.
-
-- URL: /api/hr/absensi/settings
-- Method: GET
-- Auth Required: Yes (HR role)
-```json
-Headers: Authorization: Bearer your-token
-Success Response: Same as admin endpoint
-```
-
-## Update Attendance Settings (HR)
-Update attendance system settings.
-
-- URL: /api/hr/absensi/settings
-- Method: PUT
-- Auth Required: Yes (HR role)
-- Headers:
-```json
-Authorization: Bearer your-token
-Content-Type: application/json
-```
-
-- Request Body: Same as admin endpoint
-- Success Response: Same as admin endpoint
 
 ## Employee Routes
 ## Attendance Management (Employee)
@@ -799,22 +726,30 @@ Content-Type: application/json
 - Request Body:
 ```json
 {
-  "qr_data": "encoded-qr-data",
-  "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194
+  "token": "abc123xyz",
+  "latitude": -6.2001,
+  "longitude": 106.8167
+}
+```
+- Success Response(check-in):
+```json
+{
+  "success": true,
+  "message": "Check-in berhasil",
+  "type": "checkin",
+  "absensi": {
+    ...
   }
 }
 ```
-- Success Response:
+- Success Response(check-out):
 ```json
 {
-  "status": "success",
-  "message": "Attendance recorded successfully",
-  "data": {
-    "type": "check_in",
-    "time": "2023-06-01T08:05:20Z",
-    "status": "on_time"
+  "success": true,
+  "message": "Check-out berhasil",
+  "type": "checkout",
+  "absensi": {
+    ...
   }
 }
 ```
@@ -830,29 +765,19 @@ Submit a manual attendance request.
 Authorization: Bearer your-token
 Content-Type: application/json
 ```
+- Request Body(form-data):
+    - tanggal: 2025-05-06
+    - status: Izin
+    - alasan: Menghadiri acara keluarga
+    - lampiran: [Upload file PDF/JPG/PNG]
 
-- Request Body:
-```json
-{
-  "date": "2023-06-01",
-  "check_in": "08:00:00",
-  "check_out": "17:00:00",
-  "reason": "Forgot to scan QR",
-  "evidence": "base64-encoded-image" // Optional
-}
-```
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Attendance request submitted successfully",
-  "data": {
-    "id": 1,
-    "date": "2023-06-01",
-    "check_in": "08:00:00",
-    "check_out": "17:00:00",
-    "status": "pending",
-    "created_at": "2023-06-02T10:15:30Z"
+  "success": true,
+  "message": "Pengajuan absensi berhasil dikirim",
+  "absensi": {
+    ...
   }
 }
 ```
@@ -867,16 +792,10 @@ Get attendance history for the authenticated employee.
 ```json
 Authorization: Bearer your-token
 ```
-- Query Parameters:
-```json
-start_date: Filter by start date (YYYY-MM-DD)
-end_date: Filter by end date (YYYY-MM-DD)
-page: Page number (default: 1)
-per_page: Items per page (default: 15)
-```
 
 - Success Response:
-```json{
+```json
+{
   "status": "success",
   "data": {
     "records": [
@@ -909,17 +828,9 @@ Get history of attendance requests for the authenticated employee.
 ```json
 Authorization: Bearer your-token
 ```
-- Query Parameters:
-```json
-status: Filter by status (pending, approved, rejected)
-start_date: Filter by start date (YYYY-MM-DD)
-end_date: Filter by end date (YYYY-MM-DD)
-page: Page number (default: 1)
-per_page: Items per page (default: 15)
-```
-
 - Success Response:
-```json{
+```json
+{
   "status": "success",
   "data": {
     "requests": [
@@ -947,7 +858,8 @@ per_page: Items per page (default: 15)
 
 ## Error Responses
 Validation Error
-```json{
+```json
+{
   "status": "error",
   "message": "Validation failed",
   "errors": {
@@ -957,25 +869,29 @@ Validation Error
 }
 ```
 Authentication Error
-```json{
+```json
+{
   "status": "error",
   "message": "Unauthenticated."
 }
 ```
 Authorization Error
-```json{
+```json
+{
   "status": "error",
   "message": "You do not have permission to access this resource."
 }
 ```
 Resource Not Found
-```json{
+```json
+{
   "status": "error",
   "message": "Resource not found."
 }
 ```
 Server Error
-```json{
+```json
+{
   "status": "error",
   "message": "An unexpected error occurred."
 }
