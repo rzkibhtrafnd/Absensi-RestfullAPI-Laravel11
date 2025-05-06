@@ -144,17 +144,19 @@ Authenticates a user and returns an access token.
 - Succes Response:
 ```json
 {
-  "status": "success",
-  "message": "Login successful",
-  "data": {
+    "message": "Login berhasil",
+    "token": "1|MhUcBWC06Cf4dd8ZXO4OYDXY*************",
     "user": {
-      "id": 1,
-      "name": "User Name",
-      "email": "user@example.com",
-      "role": "admin"
-    },
-    "token": "your-access-token"
-  }
+        "id": 1,
+        "name": "Admin User",
+        "email": "admin@mail.com",
+        "email_verified_at": null,
+        "role": "admin",
+        "divisi": null,
+        "posisi": null,
+        "created_at": "2025-05-06T00:51:27.000000Z",
+        "updated_at": "2025-05-06T00:51:27.000000Z"
+    }
 }
 ```
 
@@ -167,8 +169,7 @@ Invalidates the current access token.
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Logged out successfully"
+    "message": "Logout berhasil"
 }
 ```
 
@@ -181,11 +182,10 @@ Retrieves the latest QR code for attendance.
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "qr_code": "encoded-qr-data",
-    "expires_at": "2023-06-01T12:00:00Z"
-  }
+    "success": true,
+    "qr_image": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzMDAiIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0******************",
+    "token": "fp1gbWzoO3SXf**************",
+    "expired_at": "2025-05-06 11:00:00"
 }
 ```
 
@@ -218,24 +218,32 @@ Get a paginated list of all employees.
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "employees": [
-      {
-        "id": 1,
-        "name": "Employee Name",
-        "email": "employee@example.com",
-        "role": "pegawai",
-        "created_at": "2023-06-01T12:00:00Z"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 50,
-      "last_page": 4
-    }
-  }
+    "success": true,
+    "message": "",
+    "data": [
+        {
+            "id": 2,
+            "name": "Kepala HRD",
+            "email": "hr@mail.com",
+            "email_verified_at": null,
+            "role": "hr",
+            "divisi": "HRD",
+            "posisi": "Kepala HRD",
+            "created_at": "2025-05-06T00:51:27.000000Z",
+            "updated_at": "2025-05-06T00:51:27.000000Z"
+        },
+        {
+            "id": 3,
+            "name": "Pegawai User",
+            "email": "pegawai@mail.com",
+            "email_verified_at": null,
+            "role": "pegawai",
+            "divisi": "IT",
+            "posisi": "Software Engineer",
+            "created_at": "2025-05-06T00:51:27.000000Z",
+            "updated_at": "2025-05-06T00:51:27.000000Z"
+        }
+    ]
 }
 ```
 
@@ -249,24 +257,30 @@ Create a new employee.
 - Request Body:
 ```json
 {
-  "name": "New Employee",
-  "email": "newemployee@example.com",
+  "name": "Budi Santoso",
+  "email": "budi@example.com",
   "password": "password123",
-  "role": "pegawai"
+  "password_confirmation": "password123",
+  "role": "pegawai",
+  "divisi": "IT",
+  "posisi": "Developer"
 }
 ```
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Employee created successfully",
-  "data": {
-    "id": 2,
-    "name": "New Employee",
-    "email": "newemployee@example.com",
-    "role": "pegawai",
-    "created_at": "2023-06-01T12:00:00Z"
-  }
+    "success": true,
+    "message": "Pegawai berhasil ditambahkan",
+    "data": {
+        "name": "Budi Santoso",
+        "email": "budi@example.com",
+        "role": "pegawai",
+        "divisi": "IT",
+        "posisi": "Developer",
+        "updated_at": "2025-05-06T01:05:39.000000Z",
+        "created_at": "2025-05-06T01:05:39.000000Z",
+        "id": 14
+    }
 }
 ```
 
@@ -280,14 +294,19 @@ Get details of a specific employee.
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "id": 1,
-    "name": "Employee Name",
-    "email": "employee@example.com",
-    "role": "pegawai",
-    "created_at": "2023-06-01T12:00:00Z"
-  }
+    "success": true,
+    "message": "",
+    "data": {
+        "id": 14,
+        "name": "Budi Santoso",
+        "email": "budi@example.com",
+        "email_verified_at": null,
+        "role": "pegawai",
+        "divisi": "IT",
+        "posisi": "Developer",
+        "created_at": "2025-05-06T01:05:39.000000Z",
+        "updated_at": "2025-05-06T01:05:39.000000Z"
+    }
 }
 ```
 
@@ -307,23 +326,29 @@ Content-Type: application/json
 Request Body:
 ```json
 {
-  "name": "Updated Name",
-  "email": "updated@example.com",
-  "role": "hr"
+  "name": "Budi Santoso Update",
+  "email": "budiupdate@example.com",
+  "role": "pegawai",
+  "divisi": "IT",
+  "posisi": "Lead Developer"
 }
 ```
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Employee updated successfully",
-  "data": {
-    "id": 1,
-    "name": "Updated Name",
-    "email": "updated@example.com",
-    "role": "hr",
-    "updated_at": "2023-06-02T12:00:00Z"
-  }
+    "success": true,
+    "message": "Pegawai berhasil diperbarui",
+    "data": {
+        "id": 14,
+        "name": "Budi Santoso Update",
+        "email": "budiupdate@example.com",
+        "email_verified_at": null,
+        "role": "pegawai",
+        "divisi": "IT",
+        "posisi": "Lead Developer",
+        "created_at": "2025-05-06T01:05:39.000000Z",
+        "updated_at": "2025-05-06T01:07:10.000000Z"
+    }
 }
 ```
 
@@ -341,8 +366,9 @@ Authorization: Bearer your-token
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Employee deleted successfully"
+    "success": true,
+    "message": "Pegawai berhasil dihapus",
+    "data": null
 }
 ```
 
@@ -354,29 +380,25 @@ Search for employees by name or email.
 - Auth Required: Yes (Admin role)
 - Headers: Authorization: Bearer your-token
 - Query Parameters:
-    - query: Search term
-    - page: Page number (default: 1)
-    - per_page: Items per page (default: 15)
+    - query: Pearlie
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "employees": [
-      {
-        "id": 1,
-        "name": "Employee Name",
-        "email": "employee@example.com",
-        "role": "pegawai"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 5,
-      "last_page": 1
-    }
-  }
+    "success": true,
+    "message": "",
+    "data": [
+        {
+            "id": 5,
+            "name": "Pearlie Sporer",
+            "email": "alayna08@example.org",
+            "email_verified_at": "2025-05-06T00:51:27.000000Z",
+            "role": "pegawai",
+            "divisi": "HRD",
+            "posisi": "Sales Person",
+            "created_at": "2025-05-06T00:51:27.000000Z",
+            "updated_at": "2025-05-06T00:51:27.000000Z"
+        }
+    ]
 }
 ```
 
@@ -389,28 +411,24 @@ Filter employees by their role.
 - Headers: Authorization: Bearer your-token
 - Query Parameters:
     - role: Role to filter by (admin, hr, pegawai)
-    - page: Page number (default: 1)
-    - per_page: Items per page (default: 15)
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "employees": [
-      {
-        "id": 1,
-        "name": "Employee Name",
-        "email": "employee@example.com",
-        "role": "hr"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 10,
-      "last_page": 1
-    }
-  }
+    "success": true,
+    "message": "",
+    "data": [
+        {
+            "id": 2,
+            "name": "Kepala HRD",
+            "email": "hr@mail.com",
+            "email_verified_at": null,
+            "role": "hr",
+            "divisi": "HRD",
+            "posisi": "Kepala HRD",
+            "created_at": "2025-05-06T00:51:27.000000Z",
+            "updated_at": "2025-05-06T00:51:27.000000Z"
+        }
+    ]
 }
 ```
 
@@ -428,14 +446,20 @@ Get current attendance system settings.
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "work_start_time": "08:00:00",
-    "work_end_time": "17:00:00",
-    "qr_refresh_interval": 30,
-    "late_threshold_minutes": 15,
-    "work_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-  }
+    "success": true,
+    "settings": {
+        "id": 1,
+        "check_in_start": "07:00:00",
+        "check_in_end": "08:00:00",
+        "check_out_time": "16:00:00",
+        "radius_meters": 50,
+        "late_tolerance": "08:15:00",
+        "office_address": "Jl. Merdeka No.1, Jakarta",
+        "office_latitude": "-6.2000000",
+        "office_longitude": "106.8166660",
+        "created_at": "2025-05-06T01:16:37.000000Z",
+        "updated_at": "2025-05-06T01:16:37.000000Z"
+    }
 }
 ```
 
@@ -453,25 +477,34 @@ Content-Type: application/json
 - Request Body:
 ```json
 {
-  "work_start_time": "09:00:00",
-  "work_end_time": "18:00:00",
-  "qr_refresh_interval": 60,
-  "late_threshold_minutes": 10,
-  "work_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+  "check_in_start": "07:00",
+  "check_in_end": "08:00",
+  "check_out_time": "16:00",
+  "radius_meters": 50,
+  "late_tolerance": "08:15",
+  "office_address": "Jl. Merdeka No.1, Jakarta",
+  "office_latitude": -6.200000,
+  "office_longitude": 106.816666
 }
 ```
 - Success Response:
 ```json
 {
-  "status": "success",
-  "message": "Settings updated successfully",
-  "data": {
-    "work_start_time": "09:00:00",
-    "work_end_time": "18:00:00",
-    "qr_refresh_interval": 60,
-    "late_threshold_minutes": 10,
-    "work_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-  }
+    "success": true,
+    "message": "Pengaturan absensi berhasil diperbarui.",
+    "settings": {
+        "check_in_start": "07:00",
+        "check_in_end": "08:00",
+        "check_out_time": "16:00",
+        "radius_meters": 50,
+        "late_tolerance": "08:15",
+        "office_address": "Jl. Merdeka No.1, Jakarta",
+        "office_latitude": -6.2,
+        "office_longitude": 106.816666,
+        "updated_at": "2025-05-06T01:16:37.000000Z",
+        "created_at": "2025-05-06T01:16:37.000000Z",
+        "id": 1
+    }
 }
 ```
 
@@ -500,37 +533,66 @@ Get a paginated list of all attendance records.
 ```json
 Authorization: Bearer your-token
 ```
-- Query Parameters:
-```json
-- start_date: Filter by start date (YYYY-MM-DD)
-- end_date: Filter by end date (YYYY-MM-DD)
-- employee_id: Filter by employee ID
-- page: Page number (default: 1)
-- per_page: Items per page (default: 15)
-```
+
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "records": [
-      {
-        "id": 1,
-        "employee_id": 1,
-        "employee_name": "Employee Name",
-        "check_in": "2023-06-01T08:05:20Z",
-        "check_out": "2023-06-01T17:02:15Z",
-        "status": "on_time",
-        "created_at": "2023-06-01T08:05:20Z"
-      }
+    "success": true,
+    "semua_pegawai": [
+        {
+            "id": 1,
+            "pegawai_id": 3,
+            "tanggal": "2025-05-06",
+            "jam_masuk": "08:46:09",
+            "jam_keluar": "08:46:33",
+            "status": "Terlambat",
+            "alasan": null,
+            "lampiran": null,
+            "created_at": "2025-05-06T01:46:09.000000Z",
+            "updated_at": "2025-05-06T01:46:33.000000Z",
+            "approval_status": "approved",
+            "approved_by": null,
+            "keterangan_approval": null,
+            "pegawai": {
+                "id": 3,
+                "name": "Pegawai User",
+                "email": "pegawai@mail.com",
+                "email_verified_at": null,
+                "role": "pegawai",
+                "divisi": "IT",
+                "posisi": "Software Engineer",
+                "created_at": "2025-05-06T00:51:27.000000Z",
+                "updated_at": "2025-05-06T00:51:27.000000Z"
+            }
+        },
+        {
+            "id": 2,
+            "pegawai_id": 5,
+            "tanggal": "2025-05-06",
+            "jam_masuk": null,
+            "jam_keluar": null,
+            "status": "Izin",
+            "alasan": "Menghadiri acara keluarga",
+            "lampiran": "absensi_5_20250506.pdf",
+            "created_at": "2025-05-06T02:16:43.000000Z",
+            "updated_at": "2025-05-06T02:16:43.000000Z",
+            "approval_status": "pending",
+            "approved_by": null,
+            "keterangan_approval": null,
+            "pegawai": {
+                "id": 5,
+                "name": "Pearlie Sporer",
+                "email": "alayna08@example.org",
+                "email_verified_at": "2025-05-06T00:51:27.000000Z",
+                "role": "pegawai",
+                "divisi": "HRD",
+                "posisi": "Sales Person",
+                "created_at": "2025-05-06T00:51:27.000000Z",
+                "updated_at": "2025-05-06T00:51:27.000000Z"
+            }
+        }
     ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 100,
-      "last_page": 7
-    }
-  }
+    "riwayat_pribadi": []
 }
 ```
 
@@ -557,23 +619,42 @@ Content-Type: application/json
 - Success Response(check-in):
 ```json
 {
-  "success": true,
-  "message": "Check-in berhasil",
-  "type": "checkin",
-  "absensi": {
-    ...
-  }
+    "success": true,
+    "message": "Check-in berhasil tapi Anda terlambat",
+    "type": "checkin",
+    "absensi": {
+        "pegawai_id": 3,
+        "tanggal": "2025-05-06",
+        "jam_masuk": "08:46:09",
+        "status": "Terlambat",
+        "approval_status": "approved",
+        "updated_at": "2025-05-06T01:46:09.000000Z",
+        "created_at": "2025-05-06T01:46:09.000000Z",
+        "id": 1
+    }
 }
 ```
 - Success Response(check-out):
 ```json
 {
-  "success": true,
-  "message": "Check-out berhasil",
-  "type": "checkout",
-  "absensi": {
-    ...
-  }
+    "success": true,
+    "message": "Check-out berhasil",
+    "type": "checkout",
+    "absensi": {
+        "id": 1,
+        "pegawai_id": 3,
+        "tanggal": "2025-05-06",
+        "jam_masuk": "08:46:09",
+        "jam_keluar": "08:46:33",
+        "status": "Terlambat",
+        "alasan": null,
+        "lampiran": null,
+        "created_at": "2025-05-06T01:46:09.000000Z",
+        "updated_at": "2025-05-06T01:46:33.000000Z",
+        "approval_status": "approved",
+        "approved_by": null,
+        "keterangan_approval": null
+    }
 }
 ```
 
@@ -597,11 +678,20 @@ Content-Type: application/json
 - Success Response:
 ```json
 {
-  "success": true,
-  "message": "Pengajuan absensi berhasil dikirim",
-  "absensi": {
-    ...
-  }
+    "success": true,
+    "message": "Pengajuan absensi berhasil dikirim",
+    "absensi": {
+        "pegawai_id": 5,
+        "tanggal": "2025-05-06",
+        "status": "Izin",
+        "alasan": "Menghadiri acara keluarga",
+        "lampiran": "absensi_5_20250506.pdf",
+        "approved_by": null,
+        "approval_status": "pending",
+        "updated_at": "2025-05-06T02:16:43.000000Z",
+        "created_at": "2025-05-06T02:16:43.000000Z",
+        "id": 2
+    }
 }
 ```
 
@@ -617,14 +707,44 @@ Authorization: Bearer your-token
 ```
 - Success Response:
 ```json
-[
-  {
-    "tanggal": "2025-05-05",
-    "jam_masuk": "08:10:00",
-    "status": "Terlambat"
-  },
-  ...
-]
+{
+    "success": true,
+    "message": "Riwayat absensi ditemukan",
+    "riwayat": []
+}
+```
+## Get Attendance History Request
+Get attendance history for the employee request
+- URL: /api/hr/absensi/riwayat-pengajuan
+- Method: GET
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+```
+- Success Response:
+```json
+{
+    "success": true,
+    "message": "Riwayat pengajuan absensi ditemukan.",
+    "pengajuan": [
+        {
+            "id": 2,
+            "pegawai_id": 5,
+            "tanggal": "2025-05-06",
+            "jam_masuk": null,
+            "jam_keluar": null,
+            "status": "Izin",
+            "alasan": "Menghadiri acara keluarga",
+            "lampiran": "absensi_5_20250506.pdf",
+            "created_at": "2025-05-06T02:16:43.000000Z",
+            "updated_at": "2025-05-06T02:16:43.000000Z",
+            "approval_status": "pending",
+            "approved_by": null,
+            "keterangan_approval": null
+        }
+    ]
+}
 ```
 
 ## Approve Attendance Request
@@ -660,7 +780,7 @@ Content-Type: application/json
 - Request Body:
 ```json
 {
-  "alasan": "Lampiran tidak valid"
+  "alasan_ditolak": "Lampiran tidak valid"
 }
 ```
 
@@ -730,27 +850,47 @@ Content-Type: application/json
   "latitude": -6.2001,
   "longitude": 106.8167
 }
+
 ```
 - Success Response(check-in):
 ```json
 {
-  "success": true,
-  "message": "Check-in berhasil",
-  "type": "checkin",
-  "absensi": {
-    ...
-  }
+    "success": true,
+    "message": "Check-in berhasil tapi Anda terlambat",
+    "type": "checkin",
+    "absensi": {
+        "pegawai_id": 3,
+        "tanggal": "2025-05-06",
+        "jam_masuk": "08:46:09",
+        "status": "Terlambat",
+        "approval_status": "approved",
+        "updated_at": "2025-05-06T01:46:09.000000Z",
+        "created_at": "2025-05-06T01:46:09.000000Z",
+        "id": 1
+    }
 }
 ```
 - Success Response(check-out):
 ```json
 {
-  "success": true,
-  "message": "Check-out berhasil",
-  "type": "checkout",
-  "absensi": {
-    ...
-  }
+    "success": true,
+    "message": "Check-out berhasil",
+    "type": "checkout",
+    "absensi": {
+        "id": 1,
+        "pegawai_id": 3,
+        "tanggal": "2025-05-06",
+        "jam_masuk": "08:46:09",
+        "jam_keluar": "08:46:33",
+        "status": "Terlambat",
+        "alasan": null,
+        "lampiran": null,
+        "created_at": "2025-05-06T01:46:09.000000Z",
+        "updated_at": "2025-05-06T01:46:33.000000Z",
+        "approval_status": "approved",
+        "approved_by": null,
+        "keterangan_approval": null
+    }
 }
 ```
 
@@ -774,11 +914,20 @@ Content-Type: application/json
 - Success Response:
 ```json
 {
-  "success": true,
-  "message": "Pengajuan absensi berhasil dikirim",
-  "absensi": {
-    ...
-  }
+    "success": true,
+    "message": "Pengajuan absensi berhasil dikirim",
+    "absensi": {
+        "pegawai_id": 5,
+        "tanggal": "2025-05-06",
+        "status": "Izin",
+        "alasan": "Menghadiri acara keluarga",
+        "lampiran": "absensi_5_20250506.pdf",
+        "approved_by": null,
+        "approval_status": "pending",
+        "updated_at": "2025-05-06T02:16:43.000000Z",
+        "created_at": "2025-05-06T02:16:43.000000Z",
+        "id": 2
+    }
 }
 ```
 
@@ -796,25 +945,25 @@ Authorization: Bearer your-token
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "records": [
-      {
-        "id": 1,
-        "date": "2023-06-01",
-        "check_in": "08:05:20",
-        "check_out": "17:02:15",
-        "status": "on_time",
-        "working_hours": "08:57:00"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 30,
-      "last_page": 2
-    }
-  }
+    "success": true,
+    "message": "Riwayat absensi ditemukan",
+    "riwayat": [
+        {
+            "id": 2,
+            "pegawai_id": 5,
+            "tanggal": "2025-05-06",
+            "jam_masuk": null,
+            "jam_keluar": null,
+            "status": "Izin",
+            "alasan": "Menghadiri acara keluarga",
+            "lampiran": "absensi_5_20250506.pdf",
+            "created_at": "2025-05-06T02:16:43.000000Z",
+            "updated_at": "2025-05-06T02:16:43.000000Z",
+            "approval_status": "pending",
+            "approved_by": null,
+            "keterangan_approval": null
+        }
+    ]
 }
 ```
 
@@ -831,28 +980,25 @@ Authorization: Bearer your-token
 - Success Response:
 ```json
 {
-  "status": "success",
-  "data": {
-    "requests": [
-      {
-        "id": 1,
-        "date": "2023-06-01",
-        "check_in": "08:00:00",
-        "check_out": "17:00:00",
-        "reason": "Forgot to scan QR",
-        "status": "approved",
-        "notes": "Approved based on evidence provided",
-        "created_at": "2023-06-02T10:15:30Z",
-        "updated_at": "2023-06-03T09:10:15Z"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 5,
-      "last_page": 1
-    }
-  }
+    "success": true,
+    "message": "Riwayat pengajuan absensi ditemukan.",
+    "pengajuan": [
+        {
+            "id": 2,
+            "pegawai_id": 5,
+            "tanggal": "2025-05-06",
+            "jam_masuk": null,
+            "jam_keluar": null,
+            "status": "Izin",
+            "alasan": "Menghadiri acara keluarga",
+            "lampiran": "absensi_5_20250506.pdf",
+            "created_at": "2025-05-06T02:16:43.000000Z",
+            "updated_at": "2025-05-06T02:16:43.000000Z",
+            "approval_status": "pending",
+            "approved_by": null,
+            "keterangan_approval": null
+        }
+    ]
 }
 ```
 
