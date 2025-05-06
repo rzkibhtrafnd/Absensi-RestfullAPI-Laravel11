@@ -56,7 +56,7 @@ Now, edit the .env file and update the database connection settings:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=booking_api_db
+DB_DATABASE=absensis_api_db
 DB_USERNAME=your_db_username
 DB_PASSWORD=your_db_password
 ```
