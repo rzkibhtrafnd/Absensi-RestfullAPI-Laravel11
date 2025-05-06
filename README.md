@@ -135,8 +135,7 @@ Authenticates a user and returns an access token.
 - Auth Required: No
 - Request Body:
 
-json
-```
+```json
 {
   "email": "user@example.com",
   "password": "yourpassword"
@@ -174,7 +173,7 @@ Invalidates the current access token.
 ```
 
 ## QR Code
-## Get Latest QR
+Get Latest QR
 Retrieves the latest QR code for attendance.
 - URL: /api/qr-latest
 - Method: GET
@@ -192,7 +191,7 @@ Retrieves the latest QR code for attendance.
 
 ## Admin Routes
 ## Admin Dashboard
-## Get admin dashboard information.
+Get admin dashboard information.
 
 - URL: /api/admin/dashboard
 - Method: GET
@@ -207,7 +206,7 @@ Retrieves the latest QR code for attendance.
 
 ## Employee Management (Admin)
 ## List All Employees
-## Get a paginated list of all employees.
+Get a paginated list of all employees.
 
 - URL: /api/admin/pegawai
 - Method: GET
@@ -240,8 +239,8 @@ Retrieves the latest QR code for attendance.
 }
 ```
 
-##Create Employee
-##Create a new employee.
+## Create Employee
+Create a new employee.
 
 - URL: /api/admin/pegawai
 - Method: POST
@@ -272,7 +271,7 @@ Retrieves the latest QR code for attendance.
 ```
 
 ## Get Employee Details
-## Get details of a specific employee.
+Get details of a specific employee.
 
 - URL: /api/admin/pegawai/{id}
 - Method: GET
@@ -293,7 +292,7 @@ Retrieves the latest QR code for attendance.
 ```
 
 ## Update Employee
-## Update an existing employee.
+Update an existing employee.
 
 - URL: /api/admin/pegawai/{id}
 - Method: PUT
@@ -329,7 +328,7 @@ Request Body:
 ```
 
 ## Delete Employee
-## Delete an employee.
+Delete an employee.
 
 - URL: /api/admin/pegawai/{id}
 - Method: DELETE
@@ -348,21 +347,19 @@ Authorization: Bearer your-token
 ```
 
 ## Search Employees
-## Search for employees by name or email.
+Search for employees by name or email.
 
-URL: /api/admin/pegawai/search
-Method: GET
-Auth Required: Yes (Admin role)
-Headers: Authorization: Bearer your-token
-Query Parameters:
-
-query: Search term
-page: Page number (default: 1)
-per_page: Items per page (default: 15)
-
-
-Success Response:
-json{
+- URL: /api/admin/pegawai/search
+- Method: GET
+- Auth Required: Yes (Admin role)
+- Headers: Authorization: Bearer your-token
+- Query Parameters:
+    - query: Search term
+    - page: Page number (default: 1)
+    - per_page: Items per page (default: 15)
+- Success Response:
+```json
+{
   "status": "success",
   "data": {
     "employees": [
@@ -381,24 +378,22 @@ json{
     }
   }
 }
+```
 
-
-Filter Employees by Role
+## Filter Employees by Role
 Filter employees by their role.
 
-URL: /api/admin/pegawai/filter/role
-Method: GET
-Auth Required: Yes (Admin role)
-Headers: Authorization: Bearer your-token
-Query Parameters:
-
-role: Role to filter by (admin, hr, pegawai)
-page: Page number (default: 1)
-per_page: Items per page (default: 15)
-
-
-Success Response:
-json{
+- URL: /api/admin/pegawai/filter/role
+- Method: GET
+- Auth Required: Yes (Admin role)
+- Headers: Authorization: Bearer your-token
+- Query Parameters:
+    - role: Role to filter by (admin, hr, pegawai)
+    - page: Page number (default: 1)
+    - per_page: Items per page (default: 15)
+- Success Response:
+```json
+{
   "status": "success",
   "data": {
     "employees": [
@@ -417,933 +412,571 @@ json{
     }
   }
 }
-### Admin Controller
-
-#### 1. Get All Owners (GET /api/admin/owners)
-Retrieve a list of all property owners.
-
-**Request:**
-```
-GET /api/admin/owners
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-**Response (Success - 200):**
+## Attendance Settings (Admin)
+## Get Attendance Settings
+Get current attendance system settings.
+
+- URL: /api/admin/absensi/settings
+- Method: GET
+- Auth Required: Yes (Admin role)
+- Headers:
+  ```json
+  Authorization: Bearer your-token
+  ```
+- Success Response:
 ```json
 {
-  "data": [
-    {
-      "id": 2,
-      "name": "Owner 1",
-      "email": "owner1@example.com",
-      "created_at": "2023-05-15T10:00:00.000000Z"
-    },
-    {
-      "id": 3,
-      "name": "Owner 2",
-      "email": "owner2@example.com",
-      "created_at": "2023-05-15T11:00:00.000000Z"
-    }
-  ]
-}
-```
-
-#### 2. Create Owner (POST /api/admin/owners)
-Create a new property owner.
-
-**Request:**
-```
-POST /api/admin/owners
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Content-Type: multipart/form-data
-
-{
-  "name": "New Owner",
-  "email": "new.owner@example.com",
-  "password": "ownerpassword123"
-}
-```
-
-**Response (Success - 201):**
-```json
-{
-  "message": "Pemilik berhasil dibuat.",
+  "status": "success",
   "data": {
-    "id": 4,
-    "name": "New Owner",
-    "email": "new.owner@example.com",
-    "created_at": "2023-05-15T12:00:00.000000Z"
+    "work_start_time": "08:00:00",
+    "work_end_time": "17:00:00",
+    "qr_refresh_interval": 30,
+    "late_threshold_minutes": 15,
+    "work_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
   }
 }
 ```
 
-#### 3. Get Owner Detail (GET /api/admin/owners/{id})
-Get detailed information about a specific owner.
+## Update Attendance Settings
+Update attendance system settings.
 
-**Request:**
+- URL: /api/admin/absensi/settings
+- Method: PUT
+- Auth Required: Yes (Admin role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
 ```
-GET /api/admin/owners/2
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-**Response (Success - 200):**
+- Request Body:
 ```json
 {
+  "work_start_time": "09:00:00",
+  "work_end_time": "18:00:00",
+  "qr_refresh_interval": 60,
+  "late_threshold_minutes": 10,
+  "work_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+}
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "message": "Settings updated successfully",
   "data": {
-    "id": 2,
-    "name": "Owner 1",
-    "email": "owner1@example.com",
-    "created_at": "2023-05-15T10:00:00.000000Z"
+    "work_start_time": "09:00:00",
+    "work_end_time": "18:00:00",
+    "qr_refresh_interval": 60,
+    "late_threshold_minutes": 10,
+    "work_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
   }
 }
 ```
 
-#### 4. Update Owner (PUT /api/admin/owners/{id})
-Update details of an existing owner.
+## HR Routes
+## Employee Management (HR)
+HR has the same employee management endpoints as Admin:
 
-**Request:**
+- GET /api/hr/pegawai - List all employees
+- POST /api/hr/pegawai - Create an employee
+- GET /api/hr/pegawai/{id} - Get employee details
+- PUT /api/hr/pegawai/{id} - Update an employee
+- DELETE /api/hr/pegawai/{id} - Delete an employee
+- GET /api/hr/pegawai/search - Search employees
+- GET /api/hr/pegawai/filter/role - Filter employees by role
+
+The request and response formats are identical to the Admin endpoints.
+
+## Attendance Management (HR)
+## List All Attendance Records
+Get a paginated list of all attendance records.
+
+- URL: /api/hr/absensi
+- Method: GET
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
 ```
-PUT /api/owners/admin/2
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Content-Type: multipart/form-data
-
-{
-  "name": "Updated Owner Name",
-  "email": "updated.owner@example.com"
-}
+- Query Parameters:
+```json
+- start_date: Filter by start date (YYYY-MM-DD)
+- end_date: Filter by end date (YYYY-MM-DD)
+- employee_id: Filter by employee ID
+- page: Page number (default: 1)
+- per_page: Items per page (default: 15)
 ```
-
-**Response (Success - 200):**
+- Success Response:
 ```json
 {
-  "message": "Pemilik berhasil diperbarui.",
+  "status": "success",
   "data": {
-    "id": 2,
-    "name": "Updated Owner Name",
-    "email": "updated.owner@example.com"
-  }
-}
-```
-
-#### 5. Delete Owner (DELETE /api/admin/owners/{id})
-Remove an owner from the system.
-
-**Request:**
-```
-DELETE /api/admin/owners/2
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-**Response (Success - 200):**
-```json
-{
-  "message": "Pemilik berhasil dihapus."
-}
-```
-
-### Property Controller
-
-#### 1. Get All Properties (GET /api/owner/properties)
-Retrieve a list of all properties owned by the authenticated owner.
-
-**Request:**
-```
-GET /api/owner/properties
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-**Response (Success - 200):**
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "Villa Indah",
-      "address": "Jl. Raya No. 123",
-      "price": 500000,
-      "description": "Villa dengan pemandangan indah",
-      "user_id": 2,
-      "created_at": "2023-05-15T10:00:00.000000Z",
-      "updated_at": "2023-05-15T10:00:00.000000Z",
-      "photos": [
-        {
-          "id": 1,
-          "img": "property_images/xxxxxx.jpg",
-          "img_main": true
-        },
-        {
-          "id": 2,
-          "img": "property_images/yyyyyy.jpg",
-          "img_main": false
-        }
-      ]
-    }
-  ]
-}
-```
-
-#### 2. Create Property (POST /api/owner/properties)
-Create a new property listing.
-
-**Request:**
-```
-POST /api/owner/properties
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Content-Type: multipart/form-data
-
-{
-  "name": "Villa Baru",
-  "address": "Jl. Baru No. 456",
-  "price": 750000,
-  "description": "Villa baru dengan fasilitas lengkap",
-  "main_image": [file gambar utama],
-  "additional_images[]": [file gambar 1],
-  "additional_images[]": [file gambar 2]
-}
-```
-
-**Response (Success - 201):**
-```json
-{
-  "data": {
-    "id": 2,
-    "name": "Villa Baru",
-    "address": "Jl. Baru No. 456",
-    "price": 750000,
-    "description": "Villa baru dengan fasilitas lengkap",
-    "user_id": 2,
-    "created_at": "2023-05-15T12:00:00.000000Z",
-    "updated_at": "2023-05-15T12:00:00.000000Z",
-    "photos": [
-      {
-        "id": 3,
-        "img": "property_images/zzzzzz.jpg",
-        "img_main": true
-      },
-      {
-        "id": 4,
-        "img": "property_images/aaaaaa.jpg",
-        "img_main": false
-      },
-      {
-        "id": 5,
-        "img": "property_images/bbbbbb.jpg",
-        "img_main": false
-      }
-    ]
-  }
-}
-```
-
-#### 3. Update Property (PUT /api/owner/properties/{id})
-Update details of an existing property.
-
-**Request:**
-```
-PUT /api/owner/properties/1
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Content-Type: multipart/form-data
-
-{
-  "name": "Villa Indah Updated",
-  "price": 600000,
-  "deleted_image_ids[]": 2,
-  "additional_images[]": [file gambar baru]
-}
-```
-
-**Response (Success - 200):**
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Villa Indah Updated",
-    "address": "Jl. Raya No. 123",
-    "price": 600000,
-    "description": "Villa dengan pemandangan indah",
-    "user_id": 2,
-    "created_at": "2023-05-15T10:00:00.000000Z",
-    "updated_at": "2023-05-15T13:00:00.000000Z",
-    "photos": [
+    "records": [
       {
         "id": 1,
-        "img": "property_images/xxxxxx.jpg",
-        "img_main": true
-      },
-      {
-        "id": 6,
-        "img": "property_images/cccccc.jpg",
-        "img_main": false
+        "employee_id": 1,
+        "employee_name": "Employee Name",
+        "check_in": "2023-06-01T08:05:20Z",
+        "check_out": "2023-06-01T17:02:15Z",
+        "status": "on_time",
+        "created_at": "2023-06-01T08:05:20Z"
       }
-    ]
+    ],
+    "pagination": {
+      "current_page": 1,
+      "per_page": 15,
+      "total": 100,
+      "last_page": 7
+    }
   }
 }
 ```
 
-### Room Controller
+## Scan QR for Attendance
+Record attendance by scanning QR code.
 
-#### 1. Create Room (POST /api/owner/rooms)
-Create a new room within a property.
-
-**Request:**
+- URL: /api/hr/absensi/scan-qr
+- Method: POST
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
 ```
-POST /api/owner/rooms
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Content-Type: multipart/form-data
-
+- Request Body:
+```json
 {
-  "property_id": 1,
-  "name": "Kamar Deluxe",
-  "capacity": 2,
-  "price": 300000,
-  "description": "Kamar luas dengan fasilitas lengkap",
-  "availabilities[][date]": "2023-06-01",
-  "availabilities[][stock]": 5,
-  "availabilities[][date]": "2023-06-02",
-  "availabilities[][stock]": 5
+  "qr_data": "encoded-qr-data",
+  "location": {
+    "latitude": 37.7749,
+    "longitude": -122.4194
+  }
+}
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "message": "Attendance recorded successfully",
+  "data": {
+    "type": "check_in",
+    "time": "2023-06-01T08:05:20Z",
+    "status": "on_time"
+  }
 }
 ```
 
-**Response (Success - 201):**
+## Submit Attendance Request
+Submit a manual attendance request.
+
+- URL: /api/hr/absensi/ajukan
+- Method: POST
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
+```
+- Request Body:
 ```json
 {
+  "date": "2023-06-01",
+  "check_in": "08:00:00",
+  "check_out": "17:00:00",
+  "alasan": "Forgot to scan QR",
+  "lampiran": "base64-encoded-image" // Optional
+}
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "message": "Attendance request submitted successfully",
   "data": {
     "id": 1,
-    "property_id": 1,
-    "name": "Kamar Deluxe",
-    "capacity": 2,
-    "price": 300000,
-    "description": "Kamar luas dengan fasilitas lengkap",
-    "created_at": "2023-05-15T14:00:00.000000Z",
-    "updated_at": "2023-05-15T14:00:00.000000Z",
-    "availabilities": [
+    "date": "2023-06-01",
+    "check_in": "08:00:00",
+    "check_out": "17:00:00",
+    "status": "pending",
+    "created_at": "2023-06-02T10:15:30Z"
+  }
+}
+```
+
+## Get Attendance History
+Get attendance history for the authenticated user.
+
+- URL: /api/hr/absensi/riwayat
+- Method: GET
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+```
+- Query Parameters:
+```json
+start_date: Filter by start date (YYYY-MM-DD)
+end_date: Filter by end date (YYYY-MM-DD)
+page: Page number (default: 1)
+per_page: Items per page (default: 15)
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "data": {
+    "records": [
       {
         "id": 1,
         "date": "2023-06-01",
-        "stock": 5,
-        "available": true
-      },
-      {
-        "id": 2,
-        "date": "2023-06-02",
-        "stock": 5,
-        "available": true
+        "check_in": "08:05:20",
+        "check_out": "17:02:15",
+        "status": "on_time",
+        "working_hours": "08:57:00"
       }
     ],
-    "property": {
-      "id": 1,
-      "name": "Villa Indah Updated",
-      "address": "Jl. Raya No. 123"
+    "pagination": {
+      "current_page": 1,
+      "per_page": 15,
+      "total": 30,
+      "last_page": 2
     }
   }
 }
 ```
 
-#### 2. Update Room (PUT /api/owner/rooms/{id})
-Update details of an existing room.
+## Approve Attendance Request
+Approve a pending attendance request.
 
-**Request:**
+- URL: /api/hr/absensi/{id}/approve
+- Method: POST
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
 ```
-PUT /api/owner/rooms/1
-Accept: application/json
-Authorization: Bearer 2|Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Content-Type: multipart/form-data
 
+- Request Body:
+```json
 {
-  "price": 350000,
-  "availabilities[][date]": "2023-06-01",
-  "availabilities[][stock]": 3,
-  "availabilities[][date]": "2023-06-03",
-  "availabilities[][stock]": 4
+  "notes": "Approved based on evidence provided" // Optional
+}
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "message": "Attendance request approved",
+  "data": {
+    "id": 1,
+    "status": "approved",
+    "updated_at": "2023-06-03T09:10:15Z"
+  }
 }
 ```
 
-**Response (Success - 200):**
+## Reject Attendance Request
+Reject a pending attendance request.
+
+- URL: /api/hr/absensi/{id}/reject
+- Method: POST
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
+```
+
+- Request Body:
+```json{
+  "keterangan_approval": "Insufficient evidence provided" // Optional
+}
+```
+
+- Success Response:
 ```json
 {
+  "status": "success",
+  "message": "Attendance request rejected",
   "data": {
     "id": 1,
-    "property_id": 1,
-    "name": "Kamar Deluxe",
-    "capacity": 2,
-    "price": 350000,
-    "description": "Kamar luas dengan fasilitas lengkap",
-    "created_at": "2023-05-15T14:00:00.000000Z",
-    "updated_at": "2023-05-15T15:00:00.000000Z",
-    "availabilities": [
+    "status": "rejected",
+    "updated_at": "2023-06-03T09:15:20Z"
+  }
+}
+```
+
+## Get Request History
+Get history of attendance requests.
+
+- URL: /api/hr/absensi/riwayat-pengajuan
+- Method: GET
+- Auth Required: Yes (HR role)
+- Headers: Authorization: Bearer your-token
+- Query Parameters:
+```json
+status: Filter by status (pending, approved, rejected)
+start_date: Filter by start date (YYYY-MM-DD)
+end_date: Filter by end date (YYYY-MM-DD)
+employee_id: Filter by employee ID
+page: Page number (default: 1)
+per_page: Items per page (default: 15)
+```
+
+- Success Response:
+```json
+{
+  "status": "success",
+  "data": {
+    "requests": [
       {
-        "id": 3,
+        "id": 1,
+        "employee_id": 1,
+        "employee_name": "Employee Name",
         "date": "2023-06-01",
-        "stock": 3,
-        "available": true
-      },
-      {
-        "id": 4,
-        "date": "2023-06-03",
-        "stock": 4,
-        "available": true
+        "check_in": "08:00:00",
+        "check_out": "17:00:00",
+        "reason": "Forgot to scan QR",
+        "status": "approved",
+        "notes": "Approved based on evidence provided",
+        "created_at": "2023-06-02T10:15:30Z",
+        "updated_at": "2023-06-03T09:10:15Z"
       }
     ],
-    "property": {
-      "id": 1,
-      "name": "Villa Indah Updated",
-      "address": "Jl. Raya No. 123"
-    }
-  }
-}
-```
-
-### Public Property Controller
-
-#### 1. Get All Properties (GET /api/user/properties)
-List all available properties with optional filtering.
-
-**Request:**
-```
-GET /api/user/properties?city=Jakarta&type=villa&name=Indah
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
-```json
-{
-  "message": "Properti berhasil diambil",
-  "data": {
-    "data": [
-      {
-        "id": 1,
-        "name": "Villa Indah",
-        "address": "Jl. Raya No. 123, Jakarta",
-        "price": 500000,
-        "description": "Villa dengan pemandangan indah",
-        "photos": [
-          {
-            "id": 1,
-            "img": "property_images/xxxxxx.jpg",
-            "img_main": true
-          }
-        ]
-      }
-    ],
-    "links": {
-      "first": "http://example.com/api/user/properties?page=1",
-      "last": "http://example.com/api/user/properties?page=1",
-      "prev": null,
-      "next": null
-    },
-    "meta": {
+    "pagination": {
       "current_page": 1,
-      "from": 1,
-      "last_page": 1,
-      "path": "http://example.com/api/user/properties",
-      "per_page": 10,
-      "to": 1,
-      "total": 1
+      "per_page": 15,
+      "total": 25,
+      "last_page": 2
     }
   }
 }
 ```
 
-#### 2. Get Property Detail (GET /api/user/properties/{id})
-Get details about a specific property.
+## Get Attendance Settings (HR)
+Get current attendance system settings.
 
-**Request:**
-```
-GET /api/user/properties/1
-Accept: application/json
-Authorization: Bearer [token]
+- URL: /api/hr/absensi/settings
+- Method: GET
+- Auth Required: Yes (HR role)
+```json
+Headers: Authorization: Bearer your-token
+Success Response: Same as admin endpoint
 ```
 
-**Response (Success - 200):**
+## Update Attendance Settings (HR)
+Update attendance system settings.
+
+- URL: /api/hr/absensi/settings
+- Method: PUT
+- Auth Required: Yes (HR role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
+```
+
+- Request Body: Same as admin endpoint
+- Success Response: Same as admin endpoint
+
+## Employee Routes
+## Attendance Management (Employee)
+## Scan QR for Attendance
+Record attendance by scanning QR code.
+
+- URL: /api/pegawai/absensi/scan-qr
+- Method: POST
+- Auth Required: Yes (Employee role)
+Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
+```
+
+- Request Body:
 ```json
 {
-  "message": "Detail properti berhasil diambil",
+  "qr_data": "encoded-qr-data",
+  "location": {
+    "latitude": 37.7749,
+    "longitude": -122.4194
+  }
+}
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "message": "Attendance recorded successfully",
+  "data": {
+    "type": "check_in",
+    "time": "2023-06-01T08:05:20Z",
+    "status": "on_time"
+  }
+}
+```
+
+## Submit Attendance Request
+Submit a manual attendance request.
+
+- URL: /api/pegawai/absensi/ajukan
+- Method: POST
+- Auth Required: Yes (Employee role)
+- Headers:
+```json
+Authorization: Bearer your-token
+Content-Type: application/json
+```
+
+- Request Body:
+```json
+{
+  "date": "2023-06-01",
+  "check_in": "08:00:00",
+  "check_out": "17:00:00",
+  "reason": "Forgot to scan QR",
+  "evidence": "base64-encoded-image" // Optional
+}
+```
+- Success Response:
+```json
+{
+  "status": "success",
+  "message": "Attendance request submitted successfully",
   "data": {
     "id": 1,
-    "name": "Villa Indah",
-    "address": "Jl. Raya No. 123, Jakarta",
-    "price": 500000,
-    "description": "Villa dengan pemandangan indah",
-    "photos": [
-      {
-        "id": 1,
-        "img": "property_images/xxxxxx.jpg",
-        "img_main": true
-      }
-    ],
-    "rooms": [
-      {
-        "id": 1,
-        "name": "Kamar Deluxe",
-        "capacity": 2,
-        "price": 300000,
-        "description": "Kamar luas dengan fasilitas lengkap"
-      }
-    ]
-  }
-}
-```
-
-#### 3. Get Property Rooms (GET /api/user/properties/{id}/rooms)
-List all rooms available within a property.
-
-**Request:**
-```
-GET /api/user/properties/1/rooms
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
-```json
-{
-  "message": "Kamar berhasil diambil",
-  "data": [
-    {
-      "id": 1,
-      "name": "Kamar Deluxe",
-      "capacity": 2,
-      "price": 300000,
-      "description": "Kamar luas dengan fasilitas lengkap",
-      "availabilities": [
-        {
-          "date": "2023-06-01",
-          "available": true,
-          "stock": 5
-        }
-      ]
-    }
-  ]
-}
-```
-
-#### 4. Get Room Detail (GET /api/user/properties/{id}/rooms/{id})
-Get detailed information about a specific room.
-
-**Request:**
-```
-GET /api/user/properties/1/rooms/1
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
-```json
-{
-  "message": "Detail kamar berhasil diambil",
-  "data": {
-    "room": {
-      "id": 1,
-      "name": "Kamar Deluxe",
-      "capacity": 2,
-      "price": 300000,
-      "description": "Kamar luas dengan fasilitas lengkap",
-      "property": {
-        "id": 1,
-        "name": "Villa Indah",
-        "address": "Jl. Raya No. 123, Jakarta"
-      },
-      "availabilities": [
-        {
-          "date": "2023-06-01",
-          "available": true,
-          "stock": 5
-        }
-      ]
-    },
-    "booking_info": {
-      "min_date": "2023-05-20",
-      "max_quantity": 5,
-      "price_range": {
-        "default": 300000,
-        "custom": {
-          "2023-06-01": 350000
-        }
-      }
-    }
-  }
-}
-```
-
-### Booking Controller
-
-#### 1. Create Booking (POST /api/user/properties/{id}/rooms/{id}/bookings)
-Make a new booking for a specific room.
-
-**Request:**
-```
-POST /api/user/properties/1/rooms/1/bookings
-Accept: application/json
-Authorization: Bearer [token]
-Content-Type: multipart/form-data
-
-{
-  "check_in": "2023-06-01",
-  "check_out": "2023-06-03",
-  "guest_count": 2,
-  "quantity": 1,
-  "nik": "1234567890123456",
-  "ktp_img": [file KTP],
-  "address": "Jl. Contoh No. 123",
-  "gender": "L"
-}
-```
-
-**Response (Success - 201):**
-```json
-{
-  "message": "Pemesanan berhasil dibuat",
-  "data": {
-    "id": 1,
-    "user_id": 3,
-    "property_id": 1,
-    "room_id": 1,
-    "check_in": "2023-06-01",
-    "check_out": "2023-06-03",
-    "guest_count": 2,
-    "quantity": 1,
-    "total_price": 650000,
+    "date": "2023-06-01",
+    "check_in": "08:00:00",
+    "check_out": "17:00:00",
     "status": "pending",
-    "created_at": "2023-05-20T10:00:00.000000Z",
-    "updated_at": "2023-05-20T10:00:00.000000Z",
-    "room": {
-      "id": 1,
-      "name": "Kamar Deluxe"
-    },
-    "property": {
-      "id": 1,
-      "name": "Villa Indah"
-    }
+    "created_at": "2023-06-02T10:15:30Z"
   }
 }
 ```
 
-**Response (Error - 400):**
+## Get Attendance History
+Get attendance history for the authenticated employee.
+
+- URL: /api/pegawai/absensi/riwayat
+- Method: GET
+- Auth Required: Yes (Employee role)
+- Headers:
 ```json
-{
-  "message": "Kamar tidak tersedia pada tanggal berikut",
-  "date": "2023-06-02",
-  "available": 0,
-  "requested": 1
-}
+Authorization: Bearer your-token
 ```
-
-#### 2. Get User Bookings (GET /api/user/bookings)
-List all bookings made by the authenticated user.
-
-**Request:**
-```
-GET /api/user/bookings
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
+- Query Parameters:
 ```json
-{
-  "message": "Pemesanan pengguna berhasil diambil",
+start_date: Filter by start date (YYYY-MM-DD)
+end_date: Filter by end date (YYYY-MM-DD)
+page: Page number (default: 1)
+per_page: Items per page (default: 15)
+```
+
+- Success Response:
+```json{
+  "status": "success",
   "data": {
-    "data": [
+    "records": [
       {
         "id": 1,
-        "check_in": "2023-06-01",
-        "check_out": "2023-06-03",
-        "status": "pending",
-        "total_price": 650000,
-        "property": {
-          "id": 1,
-          "name": "Villa Indah"
-        },
-        "room": {
-          "id": 1,
-          "name": "Kamar Deluxe"
-        },
-        "payments": []
+        "date": "2023-06-01",
+        "check_in": "08:05:20",
+        "check_out": "17:02:15",
+        "status": "on_time",
+        "working_hours": "08:57:00"
       }
     ],
-    "links": {
-      "first": "http://example.com/api/user/bookings?page=1",
-      "last": "http://example.com/api/user/bookings?page=1",
-      "prev": null,
-      "next": null
-    },
-    "meta": {
+    "pagination": {
       "current_page": 1,
-      "from": 1,
-      "last_page": 1,
-      "path": "http://example.com/api/user/bookings",
-      "per_page": 10,
-      "to": 1,
-      "total": 1
+      "per_page": 15,
+      "total": 30,
+      "last_page": 2
     }
   }
 }
 ```
 
-#### 3. Get User Booking Detail (GET /api/user/bookings/{id})
-Get detailed information about a specific booking.
+## Get Request History
+Get history of attendance requests for the authenticated employee.
 
-**Request:**
-```
-GET /api/user/bookings/1
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
+- URL: /api/pegawai/absensi/riwayat-pengajuan
+- Method: GET
+- Auth Required: Yes (Employee role)
+- Headers:
 ```json
-{
-  "message": "Detail pemesanan berhasil diambil",
-  "data": {
-    "id": 1,
-    "check_in": "2023-06-01",
-    "check_out": "2023-06-03",
-    "status": "pending",
-    "total_price": 650000,
-    "property": {
-      "id": 1,
-      "name": "Villa Indah",
-      "address": "Jl. Raya No. 123, Jakarta"
-    },
-    "room": {
-      "id": 1,
-      "name": "Kamar Deluxe",
-      "capacity": 2,
-      "price": 300000
-    },
-    "user_profile": {
-      "nik": "1234567890123456",
-      "address": "Jl. Contoh No. 123",
-      "gender": "L",
-      "ktp_img": "ktp_images/yyyyyy.jpg"
-    },
-    "payments": []
-  }
-}
+Authorization: Bearer your-token
 ```
-
-#### 4. Get Owner Bookings (GET /api/owner/bookings)
-List all bookings made for properties owned by the authenticated owner.
-
-**Request:**
-```
-GET /api/owner/bookings
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
+- Query Parameters:
 ```json
-{
-  "message": "Pemesanan berhasil diambil",
+status: Filter by status (pending, approved, rejected)
+start_date: Filter by start date (YYYY-MM-DD)
+end_date: Filter by end date (YYYY-MM-DD)
+page: Page number (default: 1)
+per_page: Items per page (default: 15)
+```
+
+- Success Response:
+```json{
+  "status": "success",
   "data": {
-    "data": [
+    "requests": [
       {
         "id": 1,
-        "check_in": "2023-06-01",
-        "check_out": "2023-06-03",
-        "status": "pending",
-        "total_price": 650000,
-        "user": {
-          "id": 3,
-          "name": "John Doe",
-          "email": "john.doe@example.com"
-        },
-        "property": {
-          "id": 1,
-          "name": "Villa Indah"
-        },
-        "room": {
-          "id": 1,
-          "name": "Kamar Deluxe"
-        }
+        "date": "2023-06-01",
+        "check_in": "08:00:00",
+        "check_out": "17:00:00",
+        "reason": "Forgot to scan QR",
+        "status": "approved",
+        "notes": "Approved based on evidence provided",
+        "created_at": "2023-06-02T10:15:30Z",
+        "updated_at": "2023-06-03T09:10:15Z"
       }
     ],
-    "links": {
-      "first": "http://example.com/api/owner/bookings?page=1",
-      "last": "http://example.com/api/owner/bookings?page=1",
-      "prev": null,
-      "next": null
-    },
-    "meta": {
+    "pagination": {
       "current_page": 1,
-      "from": 1,
-      "last_page": 1,
-      "path": "http://example.com/api/owner/bookings",
-      "per_page": 10,
-      "to": 1,
-      "total": 1
+      "per_page": 15,
+      "total": 5,
+      "last_page": 1
     }
   }
 }
 ```
 
-### Payment Controller
-
-#### 1. Create Payment (POST /api/user/bookings/{id}/payments)
-Create a new payment for a booking.
-
-**Request:**
-```
-POST /api/user/bookings/1/payments
-Accept: application/json
-Authorization: Bearer [token]
-Content-Type: multipart/form-data
-
-{
-  "method": "Transfer",
-  "transfer_proof": [file bukti transfer]
-}
-```
-
-**Response (Success - 201):**
-```json
-{
-  "message": "Pembayaran berhasil dibuat",
-  "data": {
-    "id": 1,
-    "booking_id": 1,
-    "amount": 650000,
-    "method": "Transfer",
-    "status": "pending",
-    "transfer_proof": "payment_proofs/zzzzzz.jpg",
-    "created_at": "2023-05-20T11:00:00.000000Z",
-    "updated_at": "2023-05-20T11:00:00.000000Z"
+## Error Responses
+Validation Error
+```json{
+  "status": "error",
+  "message": "Validation failed",
+  "errors": {
+    "email": ["The email field is required."],
+    "password": ["The password field is required."]
   }
 }
 ```
-
-#### 2. Get User Payments (GET /api/user/payments)
-List all payments made by the authenticated user.
-
-**Request:**
-```
-GET /api/user/payments
-Accept: application/json
-Authorization: Bearer [token]
-```
-
-**Response (Success - 200):**
-```json
-{
-  "message": "Pembayaran berhasil diambil",
-  "data": {
-    "data": [
-      {
-        "id": 1,
-        "amount": 650000,
-        "method": "Transfer",
-        "status": "pending",
-        "created_at": "2023-05-20T11:00:00.000000Z",
-        "booking": {
-          "id": 1,
-          "property": {
-            "id": 1,
-            "name": "Villa Indah"
-          },
-          "rooms": [
-            {
-              "id": 1,
-              "name": "Kamar Deluxe"
-            }
-          ]
-        }
-      }
-    ],
-    "links": {
-      "first": "http://example.com/api/user/payments?page=1",
-      "last": "http://example.com/api/user/payments?page=1",
-      "prev": null,
-      "next": null
-    },
-    "meta": {
-      "current_page": 1,
-      "from": 1,
-      "last_page": 1,
-      "path": "http://example.com/api/user/payments",
-      "per_page": 10,
-      "to": 1,
-      "total": 1
-    }
-  }
+Authentication Error
+```json{
+  "status": "error",
+  "message": "Unauthenticated."
 }
 ```
-
-#### 3. Update Payment Status (POST /api/owner/payments/{id}/status)
-Update the status of a payment (owner only).
-
-**Request:**
-```
-POST /api/owner/payments/1/status
-Accept: application/json
-Authorization: Bearer [token]
-Content-Type: multipart/form-data
-
-{
-  "status": "success"
+Authorization Error
+```json{
+  "status": "error",
+  "message": "You do not have permission to access this resource."
 }
 ```
-
-**Response (Success - 200):**
-```json
-{
-  "message": "Status pembayaran berhasil diperbarui",
-  "data": {
-    "id": 1,
-    "booking_id": 1,
-    "amount": 650000,
-    "method": "Transfer",
-    "status": "success",
-    "paid_at": "2023-05-20T12:00:00.000000Z",
-    "transfer_proof": "payment_proofs/zzzzzz.jpg",
-    "created_at": "2023-05-20T11:00:00.000000Z",
-    "updated_at": "2023-05-20T12:00:00.000000Z"
-  }
+Resource Not Found
+```json{
+  "status": "error",
+  "message": "Resource not found."
 }
 ```
-
-## Use Cases
-
-### User Flow
-1. User registers or logs in to get an authentication token
-2. User browses available properties (can filter by city, type, etc.)
-3. User views details of a specific property
-4. User views available rooms in the property
-5. User checks availability and pricing of a specific room
-6. User makes a booking by providing personal information
-7. User uploads payment proof
-8. User can view their booking history and payment status
-
-### Owner Flow
-1. Owner logs in to get an authentication token
-2. Owner creates or updates their property listings
-3. Owner manages rooms within their properties
-4. Owner sets availability and pricing for rooms
-5. Owner views bookings made for their properties
-6. Owner processes payments and updates payment status
-
-### Admin Flow
-1. Admin manages owner accounts
-2. Admin can create, update, or delete owner accounts
-
-## Error Handling
-The API returns appropriate HTTP status codes along with error messages:
-
-- 200 OK: The request was successful
-- 201 Created: A new resource was successfully created
-- 400 Bad Request: The request contains invalid parameters
-- 401 Unauthorized: Authentication is required or credentials are invalid
-- 403 Forbidden: The authenticated user doesn't have permission to access the resource
-- 404 Not Found: The requested resource doesn't exist
-- 422 Unprocessable Entity: The request data was invalid
-- 500 Internal Server Error: An error occurred on the server
+Server Error
+```json{
+  "status": "error",
+  "message": "An unexpected error occurred."
+}
+```
